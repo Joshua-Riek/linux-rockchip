@@ -2171,11 +2171,8 @@ static bool rockchip_vop2_mod_supported(struct drm_plane *plane, u32 format, u64
 	if (modifier == DRM_FORMAT_MOD_LINEAR)
 		return true;
 
-	if (!rockchip_afbc(plane, modifier) && !rockchip_tiled(plane, modifier)) {
-		DRM_ERROR("Unsupported format modifier 0x%llx\n", modifier);
-
+	if (!rockchip_afbc(plane, modifier) && !rockchip_tiled(plane, modifier))
 		return false;
-	}
 
 	return vop2_convert_afbc_format(format) >= 0 ||
 	       vop2_convert_tiled_format(format) >= 0 ||
