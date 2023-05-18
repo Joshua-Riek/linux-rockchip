@@ -71,8 +71,7 @@
 		pinctrl-1 = <&uart9_gpios>;
 		BT,reset_gpio    = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
 		BT,wake_gpio     = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
-		BT,wake_host_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	wireless_wlan: wireless-wlan {
@@ -82,7 +81,7 @@
 		pinctrl-0 = <&wifi_host_wake_irq>, <&wifi_poweren_gpio>;
 		WIFI,host_wake_irq = <&gpio0 RK_PA0 GPIO_ACTIVE_HIGH>;
 		WIFI,poweren_gpio = <&gpio0 RK_PD0 GPIO_ACTIVE_HIGH>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	vbus5v0_typec: vbus5v0-typec {
@@ -289,12 +288,6 @@
 		};
 	};
 
-	gpio-func {
-		leds_gpio: leds-gpio {
-			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
 	usb-typec {
 		usbc0_int: usbc0-int {
 			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_up>;
@@ -313,8 +306,7 @@
 		bt_gpio: bt-gpio {
 			rockchip,pins =
 				<3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>,
-				<0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>,
-				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+				<0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
