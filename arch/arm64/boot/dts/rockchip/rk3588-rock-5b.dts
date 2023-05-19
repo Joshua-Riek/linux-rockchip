@@ -751,6 +751,7 @@
 
 &vop {
 	status = "okay";
+	disable-win-move;
 };
 
 &vop_mmu {
