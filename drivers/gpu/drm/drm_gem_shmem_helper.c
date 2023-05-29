@@ -168,6 +168,8 @@ static int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
 	struct drm_gem_object *obj = &shmem->base;
 	struct page **pages;
 
+	dma_resv_assert_held(shmem->base.resv);
+
 	if (shmem->pages_use_count++ > 0)
 		return 0;
 
@@ -224,6 +226,24 @@ void drm_gem_shmem_put_pages(struct drm_gem_shmem_object *shmem)
 }
 EXPORT_SYMBOL(drm_gem_shmem_put_pages);
 
+static int drm_gem_shmem_pin_locked(struct drm_gem_shmem_object *shmem)
+{
+	int ret;
+
+	dma_resv_assert_held(shmem->base.resv);
+
+	ret = drm_gem_shmem_get_pages(shmem);
+
+	return ret;
+}
+
+static void drm_gem_shmem_unpin_locked(struct drm_gem_shmem_object *shmem)
+{
+	dma_resv_assert_held(shmem->base.resv);
+
+	drm_gem_shmem_put_pages(shmem);
+}
+
 /**
  * drm_gem_shmem_pin - Pin backing pages for a shmem GEM object
  * @shmem: shmem GEM object
@@ -237,12 +257,19 @@ EXPORT_SYMBOL(drm_gem_shmem_put_pages);
 int drm_gem_shmem_pin(struct drm_gem_shmem_object *shmem)
 {
 	struct drm_gem_object *obj = &shmem->base;
+	int ret;
 
 	dma_resv_assert_held(shmem->base.resv);
 
 	drm_WARN_ON(obj->dev, obj->import_attach);
 
-	return drm_gem_shmem_get_pages(shmem);
+	ret = dma_resv_lock_interruptible(shmem->base.resv, NULL);
+	if (ret)
+		return ret;
+	ret = drm_gem_shmem_pin_locked(shmem);
+	dma_resv_unlock(shmem->base.resv);
+
+	return ret;
 }
 EXPORT_SYMBOL(drm_gem_shmem_pin);
 
@@ -261,7 +288,9 @@ void drm_gem_shmem_unpin(struct drm_gem_shmem_object *shmem)
 
 	drm_WARN_ON(obj->dev, obj->import_attach);
 
-	drm_gem_shmem_put_pages(shmem);
+	dma_resv_lock(shmem->base.resv, NULL);
+	drm_gem_shmem_unpin_locked(shmem);
+	dma_resv_unlock(shmem->base.resv);
 }
 EXPORT_SYMBOL(drm_gem_shmem_unpin);
 
