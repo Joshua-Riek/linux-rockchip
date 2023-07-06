@@ -153,7 +153,7 @@ void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
 		if (shmem->pages)
 			drm_gem_shmem_put_pages(shmem);
 
-		drm_WARN_ON(obj->dev, shmem->pages_use_count);
+		drm_WARN_ON(obj->dev, atomic_read(&shmem->pages_use_count));
 
 		dma_resv_unlock(shmem->base.resv);
 	}
@@ -170,14 +170,14 @@ static int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
 
 	dma_resv_assert_held(shmem->base.resv);
 
-	if (shmem->pages_use_count++ > 0)
+	if (atomic_inc_not_zero(&shmem->pages_use_count))
 		return 0;
 
 	pages = drm_gem_get_pages(obj);
 	if (IS_ERR(pages)) {
 		drm_dbg_kms(obj->dev, "Failed to get pages (%ld)\n",
 			    PTR_ERR(pages));
-		shmem->pages_use_count = 0;
+		atomic_set(&shmem->pages_use_count, 0);
 		return PTR_ERR(pages);
 	}
 
@@ -192,6 +192,8 @@ static int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
 #endif
 
 	shmem->pages = pages;
+
+	atomic_inc(&shmem->pages_use_count);
 
 	return 0;
 }
@@ -208,10 +210,10 @@ void drm_gem_shmem_put_pages(struct drm_gem_shmem_object *shmem)
 
 	dma_resv_assert_held(shmem->base.resv);
 
-	if (drm_WARN_ON_ONCE(obj->dev, !shmem->pages_use_count))
+	if (drm_WARN_ON_ONCE(obj->dev, !atomic_read(&shmem->pages_use_count)))
 		return;
 
-	if (--shmem->pages_use_count > 0)
+	if (atomic_dec_return(&shmem->pages_use_count) > 0)
 		return;
 
 #ifdef CONFIG_X86
@@ -263,6 +265,10 @@ int drm_gem_shmem_pin(struct drm_gem_shmem_object *shmem)
 
 	drm_WARN_ON(obj->dev, obj->import_attach);
 
+	/* If we are the first owner, we need to grab the lock. */
+	if (atomic_inc_not_zero(&shmem->pages_use_count))
+		return 0;
+
 	ret = dma_resv_lock_interruptible(shmem->base.resv, NULL);
 	if (ret)
 		return ret;
@@ -287,6 +293,10 @@ void drm_gem_shmem_unpin(struct drm_gem_shmem_object *shmem)
 	dma_resv_assert_held(shmem->base.resv);
 
 	drm_WARN_ON(obj->dev, obj->import_attach);
+
+	/* If we are the last owner, we need to grab the lock. */
+	if (atomic_add_unless(&shmem->pages_use_count, -1, 1))
+		return;
 
 	dma_resv_lock(shmem->base.resv, NULL);
 	drm_gem_shmem_unpin_locked(shmem);
@@ -550,18 +560,12 @@ static void drm_gem_shmem_vm_open(struct vm_area_struct *vma)
 
 	drm_WARN_ON(obj->dev, obj->import_attach);
 
-	dma_resv_lock(shmem->base.resv, NULL);
-
 	/*
 	 * We should have already pinned the pages when the buffer was first
 	 * mmap'd, vm_open() just grabs an additional reference for the new
 	 * mm the vma is getting copied into (ie. on fork()).
 	 */
-	if (!drm_WARN_ON_ONCE(obj->dev, !shmem->pages_use_count))
-		shmem->pages_use_count++;
-
-	dma_resv_unlock(shmem->base.resv);
-
+	drm_WARN_ON_ONCE(obj->dev, atomic_inc_return(&shmem->pages_use_count) == 1);
 	drm_gem_vm_open(vma);
 }
 
@@ -645,7 +649,7 @@ void drm_gem_shmem_print_info(const struct drm_gem_shmem_object *shmem,
 	if (shmem->base.import_attach)
 		return;
 
-	drm_printf_indent(p, indent, "pages_use_count=%u\n", shmem->pages_use_count);
+	drm_printf_indent(p, indent, "pages_use_count=%u\n", atomic_read(&shmem->pages_use_count));
 	drm_printf_indent(p, indent, "vmap_use_count=%u\n", shmem->vmap_use_count);
 	drm_printf_indent(p, indent, "vaddr=%p\n", shmem->vaddr);
 }
