@@ -94,6 +94,12 @@ enum drm_driver_feature {
 	 * synchronization of command submission.
 	 */
 	DRIVER_SYNCOBJ_TIMELINE         = BIT(6),
+	/**
+	 * @DRIVER_GEM_GPUVA:
+	 *
+	 * Driver supports user defined GPU VA bindings for GEM objects.
+	 */
+	DRIVER_GEM_GPUVA		= BIT(8),
 
 	/* IMPORTANT: Below are all the legacy flags, add new ones above. */
 

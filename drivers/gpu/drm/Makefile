@@ -12,6 +12,7 @@ drm-y       :=	drm_aperture.o drm_auth.o drm_cache.o \
 		drm_crtc.o drm_fourcc.o drm_modes.o drm_displayid.o \
 		drm_trace_points.o drm_prime.o \
 		drm_vma_manager.o \
+	drm_gpuva_mgr.o \
 		drm_modeset_lock.o drm_atomic.o drm_bridge.o \
 		drm_framebuffer.o drm_connector.o drm_blend.o \
 		drm_encoder.o drm_mode_object.o drm_property.o \
