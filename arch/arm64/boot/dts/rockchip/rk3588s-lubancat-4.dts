@@ -22,6 +22,10 @@
 	model = "Embedfire LubanCat-4";
 	compatible = "rockchip,rk3588s-lubancat-4", "rockchip,rk3588";
 
+	chosen: chosen {
+		bootargs = "earlycon=uart8250,mmio32,0xfeb50000 console=ttyFIQ0 coherent_pool=1m irqchip.gicv3_pseudo_nmi=0";
+	};
+
 	adc_keys: adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 1>;
