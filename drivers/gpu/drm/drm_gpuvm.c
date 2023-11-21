@@ -1217,7 +1217,7 @@ drm_gpuvm_exec_lock(struct drm_gpuvm_exec *vm_exec)
 	unsigned int num_fences = vm_exec->num_fences;
 	int ret;
 
-	drm_exec_init(exec, vm_exec->flags);
+	drm_exec_init(exec, vm_exec->flags, 0);
 
 	drm_exec_until_all_locked(exec) {
 		ret = drm_gpuvm_prepare_vm(gpuvm, exec, num_fences);
@@ -1308,7 +1308,7 @@ drm_gpuvm_exec_lock_range(struct drm_gpuvm_exec *vm_exec,
 	struct drm_exec *exec = &vm_exec->exec;
 	int ret;
 
-	drm_exec_init(exec, vm_exec->flags);
+	drm_exec_init(exec, vm_exec->flags, 0);
 
 	drm_exec_until_all_locked(exec) {
 		ret = drm_gpuvm_prepare_range(gpuvm, exec, addr, range,
