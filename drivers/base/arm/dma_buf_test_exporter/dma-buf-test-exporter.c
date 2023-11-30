@@ -346,7 +346,7 @@ static int dma_buf_te_mmap(struct dma_buf *dmabuf, struct vm_area_struct *vma)
 	if (alloc->fail_mmap)
 		return -ENOMEM;
 
-	vma->vm_flags |= VM_IO | VM_DONTEXPAND | VM_DONTDUMP;
+	vm_flags_set(vma, VM_IO | VM_DONTEXPAND | VM_DONTDUMP);
 	vma->vm_ops = &dma_buf_te_vm_ops;
 	vma->vm_private_data = dmabuf;
 

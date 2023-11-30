@@ -412,7 +412,7 @@ static int ump_file_mmap(struct file *filp, struct vm_area_struct *vma)
 	args.secure_id = vma->vm_pgoff;
 
 	/* By setting this flag, during a process fork; the child process will not have the parent UMP mappings */
-	vma->vm_flags |= VM_DONTCOPY;
+	vm_flags_set(vma, VM_DONTCOPY);
 
 	DBG_MSG(4, ("UMP vma->flags: %x\n", vma->vm_flags));
 

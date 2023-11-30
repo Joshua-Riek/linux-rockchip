@@ -142,13 +142,13 @@ _mali_osk_errcode_t _ump_osk_mem_mapregion_init(ump_memory_allocation *descripto
 	}
 
 	vma->vm_private_data = vma_usage_tracker;
-	vma->vm_flags |= VM_IO;
+	vm_flags_set(vma, VM_IO);
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,7,0)
-	vma->vm_flags |= VM_RESERVED;
+	vm_flags_set(vma, VM_RESERVED);
 #else
-	vma->vm_flags |= VM_DONTDUMP;
-	vma->vm_flags |= VM_DONTEXPAND;
-	vma->vm_flags |= VM_PFNMAP;
+	vm_flags_set(vma, VM_DONTDUMP);
+	vm_flags_set(vma, VM_DONTEXPAND);
+	vm_flags_set(vma, VM_PFNMAP);
 #endif
 
 
