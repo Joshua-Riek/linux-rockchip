@@ -938,7 +938,7 @@ wl_ext_connect(struct net_device *dev, struct wl_conn_info *conn_info)
 	 *	If SSID is zero join based on BSSID only
 	 */
 	join_params_size = WL_EXTJOIN_PARAMS_FIXED_SIZE +
-		chan_cnt * sizeof(chanspec_t);
+		chan_cnt * sizeof(chanspec_t) + 2;
 	ext_join_params =  (wl_extjoin_params_t*)kzalloc(join_params_size, GFP_KERNEL);
 	if (ext_join_params == NULL) {
 		err = -ENOMEM;

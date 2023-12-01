@@ -309,7 +309,7 @@ wl_escan_alloc_params(struct net_device *dev, struct wl_escan_info *escan,
 	*out_params_size = 0;
 
 	/* Our scan params only need space for 1 channel and 0 ssids */
-	params_size = WL_SCAN_PARAMS_V1_FIXED_SIZE + 1 * sizeof(uint16);
+	params_size = WL_SCAN_PARAMS_V1_FIXED_SIZE + 1 * sizeof(uint16) + 2;
 	params = (wl_scan_params_v1_t*) kzalloc(params_size, GFP_KERNEL);
 	if (params == NULL) {
 		ESCAN_ERROR(dev->name, "mem alloc failed (%d bytes)\n", params_size);
