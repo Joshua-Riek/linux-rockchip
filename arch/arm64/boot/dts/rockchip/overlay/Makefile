@@ -156,4 +156,3 @@ targets += $(dtbo-y) $(dtbotxt-y)
 
 always-y		:= $(dtbo-y) $(dtbotxt-y)
 clean-files		:= *.dtbo
-
