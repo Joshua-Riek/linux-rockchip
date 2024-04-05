@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+ *
+ */
+
+/dts-v1/;
+
+#include "rk3588-firefly-itx-3588j.dtsi"
+//#include "rk3588-firefly-demo.dtsi"
+#include "rk3588-firefly-itx-cam-8ms1m.dtsi"
+
+/ {
+	model = "Firefly ITX-3588J HDMI(Linux)";
+	compatible = "rockchip,rk3588-firefly-itx-3588j", "rockchip,rk3588";
+};
+
