@@ -1,3 +1,16 @@
+linux-rockchip (6.1.0-1005.5) noble; urgency=medium
+
+  * add the firefly itx-3588j device tree
+  * UBUNTU: enable common sensor devices
+  * arm64: dts: Add board bananapim7
+  * arm64: rockchip: dts: Add support for the NanoPC-T6 LTS
+  * UBUNTU: remove flash-kernel recommends
+  * UBUNTU: enable apparmor by default
+  * Revert "Fix CEC on rk356X on tv restart (#149)"
+  * UBUNTU: enable khadas mcu and set cpufreq default gov to performance
+
+ -- Joshua Riek <jjriek@verizon.net>  Sat, 06 Apr 2024 14:05:54 -0400
+
 linux-rockchip (6.1.0-1004.4) noble; urgency=medium
 
   * arm64: dts: rockchip: rename ArmSoM Sige7 / W3 model names
