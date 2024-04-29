@@ -26,6 +26,18 @@
 				remote-endpoint = <&ov13855_out>;
 				data-lanes = <1 2>;
 			};
+			
+			mipi_in_cam2: endpoint@2 {
+				reg = <2>;
+				remote-endpoint = <&ov5647_out>;
+				data-lanes = <1 2>;
+			};
+
+			mipi_in_cam3: endpoint@3 {
+				reg = <3>;
+				remote-endpoint = <&imx219_out>;
+				data-lanes = <1 2>;
+			};
 		};
 
 		port@1 {
@@ -110,6 +122,61 @@
 		port {
 			ov13855_out: endpoint {
 				remote-endpoint = <&mipi_in_cam1>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+	
+	ad5398_p2: ad5398-p2@c {
+		compatible = "adi,ad5398";
+		status = "disabled";
+		reg = <0x0c>;
+		rockchip,camera-module-index = <0>;
+		rockchip,vcm-start-current = <10>;
+		rockchip,vcm-rated-current = <85>;
+		rockchip,vcm-step-mode = <5>;
+		rockchip,camera-module-facing = "back";
+	};
+
+	ov5647_2: ov5647-2@36 {
+		compatible = "ovti,ov5647";
+		status = "disabled";
+		reg = <0x36>;
+		clocks = <&ext_cam_clk_25m>;
+		clock-names = "xvclk";
+		power-domains = <&power RK3588_PD_VI>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&mipim0_camera4_clk>;
+		rockchip,camera-module-index = <0>;
+		rockchip,camera-module-facing = "back";
+		rockchip,camera-module-name = "rpi-camera-v1";
+		rockchip,camera-module-lens-name = "default";
+		lens-focus = <&ad5398_p2>;
+		port {
+			ov5647_out: endpoint {
+				remote-endpoint = <&mipi_in_cam2>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+
+	imx219_2: imx219-2@10 {
+		compatible = "sony,imx219";
+		status = "disabled";
+		reg = <0x10>;
+		clocks = <&ext_cam_clk_24m>;
+		clock-names = "xvclk";
+		power-domains = <&power RK3588_PD_VI>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&mipim0_camera4_clk>;
+		rockchip,camera-module-index = <0>;
+		rockchip,camera-module-facing = "back";
+		rockchip,camera-module-name = "rpi-camera-v2";
+		rockchip,camera-module-lens-name = "default";
+		lens-focus = <&ad5398_p2>;
+		port {
+			imx219_out: endpoint {
+				remote-endpoint = <&mipi_in_cam3>;
 				data-lanes = <1 2>;
 			};
 		};
