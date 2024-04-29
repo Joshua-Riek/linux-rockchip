@@ -4,6 +4,25 @@
  *
  */
 
+/ {
+ 	compatible = "rockchip,rk3588";
+	ext_cam_clk_24m: ext-cam-clk-24m {
+		// status = "disabled";
+		compatible = "fixed-clock";
+		clock-frequency = <24000000>;
+		clock-output-names = "ext_cam_clk_24m";
+		#clock-cells = <0>;
+	};
+
+	ext_cam_clk_25m: ext-cam-clk-25m {
+		// status = "disabled";
+		compatible = "fixed-clock";
+		clock-frequency = <25000000>;
+		clock-output-names = "ext_cam_clk_25m";
+		#clock-cells = <0>;
+	};
+};
+
 &csi2_dcphy1 {
 	status = "disabled";
 
@@ -25,6 +44,18 @@
 			mipi_in_dcphy1: endpoint@1 {
 				reg = <1>;
 				remote-endpoint = <&ov13855_out1>;
+				data-lanes = <1 2>;
+			};
+
+			mipi_in_dcphy2: endpoint@2 {
+				reg = <2>;
+				remote-endpoint = <&ov5647_out1>;
+				data-lanes = <1 2>;
+			};
+
+			mipi_in_dcphy3: endpoint@3 {
+				reg = <3>;
+				remote-endpoint = <&imx219_out1>;
 				data-lanes = <1 2>;
 			};
 		};
@@ -107,6 +138,59 @@
 		port {
 			ov13855_out1: endpoint {
 				remote-endpoint = <&mipi_in_dcphy1>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+
+	ad5398: ad5398@c {
+		compatible = "adi,ad5398";
+		status = "disabled";
+		reg = <0x0c>;
+		rockchip,camera-module-index = <0>;
+		rockchip,vcm-start-current = <10>;
+		rockchip,vcm-rated-current = <85>;
+		rockchip,vcm-step-mode = <5>;
+		rockchip,camera-module-facing = "front";
+	};
+
+	ov5647_3: ov5647@36 {
+		compatible = "ovti,ov5647";
+		status = "disabled";
+		reg = <0x36>;
+		clocks = <&ext_cam_clk_25m>;
+		clock-names = "xvclk";
+		pinctrl-names = "default";
+		pinctrl-0 = <&mipim0_camera4_clk>;
+		rockchip,camera-module-index = <1>;
+		rockchip,camera-module-facing = "front";
+		rockchip,camera-module-name = "rpi-camera-v1";
+		rockchip,camera-module-lens-name = "default";
+		lens-focus = <&ad5398>;
+		port {
+			ov5647_out1: endpoint {
+				remote-endpoint = <&mipi_in_dcphy2>;
+				data-lanes = <1 2>;
+			};
+		};
+	};
+
+	imx219_3: imx219@10 {
+		compatible = "sony,imx219";
+		status = "disabled";
+		reg = <0x10>;
+		clocks = <&ext_cam_clk_24m>;
+		clock-names = "xvclk";
+		pinctrl-names = "default";
+		pinctrl-0 = <&mipim0_camera4_clk>;
+		rockchip,camera-module-index = <1>;
+		rockchip,camera-module-facing = "front";
+		rockchip,camera-module-name = "rpi-camera-v2";
+		rockchip,camera-module-lens-name = "default";
+		lens-focus = <&ad5398>;
+		port {
+			imx219_out1: endpoint {
+				remote-endpoint = <&mipi_in_dcphy3>;
 				data-lanes = <1 2>;
 			};
 		};
