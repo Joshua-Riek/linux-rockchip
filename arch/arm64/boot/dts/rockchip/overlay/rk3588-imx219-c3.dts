@@ -50,9 +50,9 @@
 		__overlay__ {
 			status = "okay";
 
-			//ad5398@c {
-			//	status = "okay";
-			//};
+			ad5398@c {
+				status = "okay";
+			};
 
 			imx219@10 {
 				status = "okay";
