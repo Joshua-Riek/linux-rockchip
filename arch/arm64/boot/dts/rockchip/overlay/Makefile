@@ -18,6 +18,21 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	orangepi-5-pro-cam1.dtbo \
 	orangepi-5-pro-cam2.dtbo \
 	orangepi-5-pro-disable-leds.dtbo \
+	orangepi-5-ov5647-c1.dtbo \
+	orangepi-5-ov5647-c2.dtbo \
+	orangepi-5-ov5647-c3.dtbo \
+	orangepi-5-imx219-c1.dtbo \
+	orangepi-5-imx219-c2.dtbo \
+	orangepi-5-imx219-c3.dtbo \
+	orangepi-5-imx708-c1.dtbo \
+	orangepi-5-imx708-c2.dtbo \
+	orangepi-5-imx708-c3.dtbo \
+	orangepi-5-ov13850-c1.dtbo \
+	orangepi-5-ov13850-c2.dtbo \
+	orangepi-5-ov13850-c3.dtbo \
+	orangepi-5-ov13855-c1.dtbo \
+	orangepi-5-ov13855-c2.dtbo \
+	orangepi-5-ov13855-c3.dtbo \
 	rock-5a-hdmi-8k.dtbo \
 	rock-5a-i2c5-rtc-hym8563.dtbo \
 	rock-5a-radxa-camera-4k.dtbo \
@@ -136,12 +151,6 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3588-i2c7-m3.dtbo \
 	rk3588-i2c8-m2.dtbo \
 	rk3588-i2c8-m4.dtbo \
-	rk3588-ov13850-c1.dtbo \
-	rk3588-ov13850-c2.dtbo \
-	rk3588-ov13850-c3.dtbo \
-	rk3588-ov13855-c1.dtbo \
-	rk3588-ov13855-c2.dtbo \
-	rk3588-ov13855-c3.dtbo \
 	rk3588-pwm0-m0.dtbo \
 	rk3588-pwm0-m1.dtbo \
 	rk3588-pwm0-m2.dtbo \
@@ -289,4 +298,3 @@ targets += $(dtbo-y) $(dtbotxt-y)
 
 always-y		:= $(dtbo-y) $(dtbotxt-y)
 clean-files		:= *.dtbo
-
