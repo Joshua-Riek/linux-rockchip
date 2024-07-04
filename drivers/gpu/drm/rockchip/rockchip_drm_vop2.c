@@ -13758,7 +13758,7 @@ static char *vop2_plane_mask_to_string(unsigned long mask)
 
 static inline const char *vop2_plane_id_to_string(unsigned long phy)
 {
-	if (WARN_ON(phy >= ARRAY_SIZE(vop2_layer_name_list)))
+	if (phy >= ARRAY_SIZE(vop2_layer_name_list))
 		return NULL;
 
 	return vop2_layer_name_list[phy];

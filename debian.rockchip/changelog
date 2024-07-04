@@ -1,3 +1,9 @@
+linux-rockchip (6.1.0-1019.19) noble; urgency=medium
+
+  * scripts: install dtbo files to kernel packages
+
+ -- Joshua Riek <jjriek@verizon.net>  Mon, 01 Jul 2024 07:33:45 -0400
+
 linux-rockchip (6.1.0-1018.18) noble; urgency=medium
 
   * arm64: dts: rockchip: add generic rk3568 overlays
