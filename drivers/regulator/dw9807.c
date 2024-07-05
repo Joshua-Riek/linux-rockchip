@@ -316,7 +316,7 @@ static const struct of_device_id dw9807_of_table[] = {
 	{ /* sentinel */ }
 };
 
-static int dw9807_probe(struct i2c_client *client)
+static int dw9807_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	struct dw9807_device *dw9807_dev;
 	const struct of_device_id *match;
