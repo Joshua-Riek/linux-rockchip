@@ -25,6 +25,7 @@
 #define DRIVER_VERSION			KERNEL_VERSION(0, 0x01, 0x03)
 #define IMX708_NAME			"imx708"
 #define OF_CAMERA_HDR_MODE		"rockchip,camera-hdr-mode"
+#define IMX708_LANES  2
 
 static int debug = 0;
 module_param(debug, int, 0644);
@@ -1565,19 +1566,9 @@ unlock_and_return:
 static int imx708_g_mbus_config(struct v4l2_subdev *sd, unsigned int pad_id,
 				struct v4l2_mbus_config *config)
 {
-	// struct imx708 *imx708 = to_imx708(sd);
-	// const struct imx708_mode *mode = imx708->cur_mode;
-
-	u32 val = 0;
-
-	val = 1 << 1/*(imx708->lanes - 1)*/|
-		  V4L2_MBUS_CSI2_CHANNEL_0 |
-	      V4L2_MBUS_CSI2_CONTINUOUS_CLOCK;
-	// if (mode->hdr_mode != NO_HDR)
-	// 	val |= V4L2_MBUS_CSI2_CHANNEL_1;
 
 	config->type = V4L2_MBUS_CSI2_DPHY;
-	config->flags = val;
+	config->bus.mipi_csi2.num_data_lanes = IMX708_LANES;
 
 	return 0;
 }
