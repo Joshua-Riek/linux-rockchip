@@ -947,7 +947,7 @@ static int imx708_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct imx708 *imx708 = to_imx708(sd);
 	struct v4l2_mbus_framefmt *try_fmt_img =
-		v4l2_subdev_get_try_format(sd, fh->pad, 0);
+		v4l2_subdev_get_try_format(sd, fh->state, 0);
 
 	mutex_lock(&imx708->mutex);
 
@@ -1145,7 +1145,7 @@ static int imx708_g_frame_interval(struct v4l2_subdev *sd,
 }
 
 static int imx708_enum_mbus_code(struct v4l2_subdev *sd,
-				 struct v4l2_subdev_pad_config *cfg,
+				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_mbus_code_enum *code)
 {
 	struct imx708 *imx708 = to_imx708(sd);
@@ -1158,7 +1158,7 @@ static int imx708_enum_mbus_code(struct v4l2_subdev *sd,
 }
 
 static int imx708_enum_frame_size(struct v4l2_subdev *sd,
-				  struct v4l2_subdev_pad_config *cfg,
+				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_frame_size_enum *fse)
 {
 	struct imx708 *imx708 = to_imx708(sd);
@@ -1179,7 +1179,7 @@ static int imx708_enum_frame_size(struct v4l2_subdev *sd,
 }
 
 static int imx708_get_pad_format(struct v4l2_subdev *sd,
-				 struct v4l2_subdev_pad_config *cfg,
+				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_format *fmt)
 {
 	struct imx708 *imx708 = to_imx708(sd);
@@ -1189,7 +1189,7 @@ static int imx708_get_pad_format(struct v4l2_subdev *sd,
 
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
-		fmt->format = *v4l2_subdev_get_try_format(sd, cfg,
+		fmt->format = *v4l2_subdev_get_try_format(sd, sd_state,
 						   fmt->pad);
 #else
 		mutex_unlock(&imx477->mutex);
@@ -1237,7 +1237,7 @@ imx708_find_best_fit(struct imx708 *imx708, struct v4l2_subdev_format *fmt)
 }
 
 static int imx708_set_pad_format(struct v4l2_subdev *sd,
-				 struct v4l2_subdev_pad_config *cfg,
+				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_format *fmt)
 {
 	const struct imx708_mode *mode;
@@ -1251,7 +1251,7 @@ static int imx708_set_pad_format(struct v4l2_subdev *sd,
 	fmt->format.field = V4L2_FIELD_NONE;
 	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY) {
 #ifdef CONFIG_VIDEO_V4L2_SUBDEV_API
-		*v4l2_subdev_get_try_format(sd, cfg, fmt->pad) = fmt->format;
+		*v4l2_subdev_get_try_format(sd, sd_state, fmt->pad) = fmt->format;
 #else
 		mutex_unlock(&imx708->mutex);
 		return -ENOTTY;
@@ -1743,7 +1743,7 @@ static long imx708_compat_ioctl32(struct v4l2_subdev *sd,
 #endif
 
 static int imx708_enum_frame_interval(struct v4l2_subdev *sd,
-	struct v4l2_subdev_pad_config *cfg,
+	struct v4l2_subdev_state *sd_state,
 	struct v4l2_subdev_frame_interval_enum *fie)
 {
 	struct imx708 *imx708 = to_imx708(sd);
@@ -1781,7 +1781,7 @@ static const struct v4l2_subdev_pad_ops imx708_pad_ops = {
 	.get_fmt = imx708_get_pad_format,
 	.set_fmt = imx708_set_pad_format,
 	// .get_selection = imx708_get_selection,
-	.set_mbus_config = imx708_g_mbus_config,
+	.get_mbus_config = imx708_g_mbus_config,
 
 };
 
@@ -2093,7 +2093,7 @@ static int imx708_probe(struct i2c_client *client,
 		 imx708->module_index, facing,
 		 IMX708_NAME, dev_name(sd->dev));
 
-	ret = v4l2_async_register_subdev_sensor_common(&imx708->subdev);
+	ret = v4l2_async_register_subdev_sensor(&imx708->subdev);
 	if (ret < 0) {
 		dev_err(dev, "failed to register sensor sub-device: %d\n", ret);
 		goto error_media_entity;
@@ -2119,7 +2119,7 @@ error_power_off:
 	return ret;
 }
 
-static int imx708_remove(struct i2c_client *client)
+static void imx708_remove(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct imx708 *imx708 = to_imx708(sd);
@@ -2135,7 +2135,6 @@ static int imx708_remove(struct i2c_client *client)
 	if (!pm_runtime_status_suspended(&client->dev))
 		imx708_power_off(&client->dev);
 	pm_runtime_set_suspended(&client->dev);
-    return 0;
 }
 
 #if IS_ENABLED(CONFIG_OF)
