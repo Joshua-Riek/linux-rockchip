@@ -186,6 +186,17 @@
 			};
 		};
 	};
+	
+	dw9817: dw9817@c {
+		compatible = "dongwoon,dw9817";
+		status = "disabled";
+		reg = <0x0c>;
+		rockchip,camera-module-index = <0>;
+		rockchip,vcm-start-current = <10>;
+		rockchip,vcm-rated-current = <85>;
+		rockchip,vcm-step-mode = <5>;
+		rockchip,camera-module-facing = "back";
+	};
 
 	imx708_3: imx708@1a {
 		compatible = "sony,imx708";
@@ -204,7 +215,7 @@
 		rockchip,camera-module-facing = "front";
 		rockchip,camera-module-name = "rpi-camera-v3";
 		rockchip,camera-module-lens-name = "default";
-		lens-focus = <&dw9807>;
+		lens-focus = <&dw9817>;
 		port {
 			imx708_out1: endpoint {
 				remote-endpoint = <&mipi_in_dcphy4>;

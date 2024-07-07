@@ -50,7 +50,7 @@
 		__overlay__ {
 			status = "okay";
 
-			dw9807-p2@c {
+			dw9817-p2@c {
 				status = "okay";
 			};
 
