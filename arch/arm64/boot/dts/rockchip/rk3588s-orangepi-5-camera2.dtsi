@@ -151,13 +151,13 @@
 		clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
 		clock-names = "xvclk";
 		assigned-clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
-        assigned-clock-rates = <25000000>;
+        	assigned-clock-rates = <25000000>;
 		power-domains = <&power RK3588_PD_VI>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&mipim0_camera4_clk>;
 		rockchip,camera-module-index = <0>;
 		rockchip,camera-module-facing = "back";
-		rockchip,camera-module-name = "rpi-camera-v1";
+		rockchip,camera-module-name = "rpi-camera-v1p3";
 		rockchip,camera-module-lens-name = "default";
 		lens-focus = <&ad5398_p2>;
 		port {
@@ -175,7 +175,7 @@
 		clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
 		clock-names = "xvclk";
 		assigned-clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
-        assigned-clock-rates = <24000000>;
+        	assigned-clock-rates = <24000000>;
 		power-domains = <&power RK3588_PD_VI>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&mipim0_camera4_clk>;
@@ -199,7 +199,7 @@
 		clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
 		clock-names = "inclk";
 		assigned-clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
-        assigned-clock-rates = <24000000>;
+        	assigned-clock-rates = <24000000>;
 		power-domains = <&power RK3588_PD_VI>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&mipim0_camera4_clk>;
@@ -207,7 +207,7 @@
 		rockchip,camera-module-facing = "back";
 		rockchip,camera-module-name = "rpi-camera-v3";
 		rockchip,camera-module-lens-name = "default";
-		//lens-focus = <&ad5398_p2>;
+		lens-focus = <&dw9807_p2>;
 		port {
 			imx708_out: endpoint {
 				remote-endpoint = <&mipi_in_cam4>;

@@ -56,7 +56,7 @@
 		__overlay__ {
 			status = "okay";
 
-			dw9817-p1@c {
+			dw9807-p1@c {
 				status = "okay";
 			};
 
