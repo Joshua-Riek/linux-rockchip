@@ -18,6 +18,10 @@
 		ethernet1 = &r8125_u12;
 	};
 
+	system {
+		cpu,model = "Rockchip RK3588";
+	};
+
 	/* If hdmirx node is disabled, delete the reserved-memory node here. */
 	reserved-memory {
 		#address-cells = <2>;

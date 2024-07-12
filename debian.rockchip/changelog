@@ -1,3 +1,13 @@
+linux-rockchip (6.1.0-1020.20) noble; urgency=medium
+
+  * UBUNTU: enable iSCSI and MAX17040 battery
+  * UBUNTU: enable RTL8852BS SDIO WIFI driver
+  * net: wireless: add support for RTL8852BS SDIO WIFI driver
+  * arm64: dts: rockchip: add rk3588 system node to the NanoPC-T6
+  * drm: rockchip: vop2: disable plane warning log
+
+ -- Joshua Riek <jjriek@verizon.net>  Wed, 10 Jul 2024 22:58:40 -0400
+
 linux-rockchip (6.1.0-1019.19) noble; urgency=medium
 
   * scripts: install dtbo files to kernel packages
