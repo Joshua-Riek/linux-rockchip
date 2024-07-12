@@ -203,7 +203,7 @@
 		status = "disabled";
 		reg = <0x1a>;
 	    	clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
-		clock-names = "inclk";
+		clock-names = "xclk";
 		assigned-clocks = <&cru CLK_MIPI_CAMARAOUT_M4>;
         	assigned-clock-rates = <24000000>;
 		pinctrl-names = "default";
