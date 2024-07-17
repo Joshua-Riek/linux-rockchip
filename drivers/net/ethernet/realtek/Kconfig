@@ -95,19 +95,6 @@ config 8139_OLD_RX_RESET
 	  experience problems, you can enable this option to restore the
 	  old RX-reset behavior.  If unsure, say N.
 
-config R8168
-	tristate "Realtek 8168 gigabit ethernet support"
-	depends on PCI
-	select FW_LOADER
-	select CRC32
-	select PHYLIB
-	select REALTEK_PHY
-	help
-	  Say Y here if you have a Realtek 8168 PCI Gigabit Ethernet adapter.
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called r8168.  This is recommended.
-
 config R8169
 	tristate "Realtek 8169/8168/8101/8125 ethernet support"
 	depends on PCI
@@ -125,5 +112,13 @@ config R8169
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called r8169.  This is recommended.
+
+config R8169_LEDS
+	def_bool R8169 && LEDS_TRIGGER_NETDEV
+	depends on !(R8169=y && LEDS_CLASS=m)
+	help
+	  Optional support for controlling the NIC LED's with the netdev
+	  LED trigger.
+
 
 endif # NET_VENDOR_REALTEK
