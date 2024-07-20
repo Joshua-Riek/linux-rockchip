@@ -1,0 +1,203 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
+ *
+ */
+
+/dts-v1/;
+
+#include "aio-3588l.dtsi"
+#include "aio-3588l-cam-8ms1m.dtsi"
+#include "rk3588-firefly-demo.dtsi"
+
+/ {
+    model = "Firefly AIO-3588L MIPI101(Linux)";
+    compatible = "rockchip,aio-3588l-mipi101-M101014-BE45-A1", "rockchip,rk3588";
+
+    backlight: backlight {
+        status = "okay";
+        compatible = "pwm-backlight";
+        enable-gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_HIGH>;
+        pwms = <&pwm8 0 50000 1>;
+        brightness-levels = <
+             60  60  60  61  61  61  62  62
+             62  63  63  63  64  64  64  65
+             65  65  66  66  66  67  67  67
+             68  68  68  69  69  69  70  70
+             70  71  71  71  72  72  72  73
+             73  73  74  74  74  75  75  75
+             76  76  76  77  77  77  78  78
+             78  79  79  79  80  80  80  81
+             81  81  82  82  82  83  83  83
+             84  84  84  85  85  85  86  86
+             86  87  87  87  88  88  88  89
+             89  89  90  91  92  93  94  95
+             96  97  98  99 100 101 102 103
+            104 105 106 107 108 109 110 111
+            112 113 114 115 116 117 118 119
+            120 121 122 123 124 125 126 127
+            128 129 130 131 132 133 134 135
+            136 137 138 139 140 141 142 143
+            144 145 146 147 148 149 150 151
+            152 153 154 155 156 157 158 159
+            160 161 162 163 164 165 166 167
+            168 169 170 171 172 173 174 175
+            176 177 178 179 180 181 182 183
+            184 185 186 187 188 189 190 191
+            192 193 194 195 196 197 198 199
+            200 201 202 203 204 205 206 207
+            208 209 210 211 212 213 214 215
+            216 217 218 219 220 221 222 223
+            224 225 226 227 228 229 230 231
+            232 233 234 235 236 237 238 239
+            240 241 242 243 244 245 246 247
+            248 249 250 251 252 253 254 255
+        >;
+        default-brightness-level = <150>;
+    };
+
+};
+
+&pwm8 {
+    pinctrl-0 = <&pwm8m0_pins>;
+    status = "okay";
+};
+
+/*
+ * mipi_dcphy0 needs to be enabled
+ * when dsi0 is enabled
+ */
+&mipi_dcphy0 {
+    status = "okay";
+};
+
+&dsi0_in_vp2 {
+    status = "disabled";
+};
+
+&dsi0_in_vp3 {
+    status = "okay";
+};
+
+&route_dsi0 {
+    status = "okay";
+    connect = <&vp3_out_dsi0>;
+};
+
+&route_hdmi0{
+    status = "disabled";
+};
+
+&dsi0 {
+    firefly-check;
+    status = "okay";
+    //rockchip,lane-rate = <1000>;
+    dsi_panel: panel@0 {
+        status = "okay";
+        compatible = "simple-panel-dsi";
+        reg = <0>;
+        backlight = <&backlight>;
+        
+        enable-gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_HIGH>;
+        reset-gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
+
+        enable-delay-ms = <50>;
+        prepare-delay-ms = <200>;
+        reset-delay-ms = <50>;
+        init-delay-ms = <55>;
+        unprepare-delay-ms = <50>;
+        disable-delay-ms = <20>;
+        mipi-data-delay-ms = <200>;
+        size,width = <120>;
+        size,height = <170>;
+        dsi,flags = <(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST | MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_EOT_PACKET)>;
+        dsi,format = <MIPI_DSI_FMT_RGB888>;
+        dsi,lanes  = <4>;
+
+        panel-init-sequence = [
+            //39 00 04 B9 83 10 2E
+            // 15 00 02 CF FF
+            99 00 02 04 83
+            05 78 01 11
+            05 32 01 29
+            //15 00 02 35 00
+        ];
+
+        panel-exit-sequence = [
+            05 00 01 28
+            05 00 01 10
+        ];
+
+        disp_timings0: display-timings {
+            native-mode = <&dsi_timing0>;
+            dsi_timing0: timing0 {
+                clock-frequency = <72600000>;//<80000000>;
+                hactive = <800>;//<768>;
+                vactive = <1280>;
+                hsync-len = <14>;   //20, 50,10
+                hback-porch = <26>; //50, 56,10
+                hfront-porch = <32>;//50, 30,180
+                vsync-len = <8>;//4
+                vback-porch = <20>;//4
+                vfront-porch = <80>;//8
+                hsync-active = <0>;
+                vsync-active = <0>;
+                de-active = <0>;
+                pixelclk-active = <0>;
+            };
+        };
+
+        ports {
+            #address-cells = <1>;
+            #size-cells = <0>;
+
+            port@0 {
+                reg = <0>;
+                panel_in_dsi: endpoint {
+                    remote-endpoint = <&dsi_out_panel>;
+                };
+            };
+        };
+    };
+
+    ports {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        port@1 {
+            reg = <1>;
+            dsi_out_panel: endpoint {
+            remote-endpoint = <&panel_in_dsi>;
+            };
+        };
+    };
+};
+
+&i2c8{
+    status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&i2c8m4_xfer>;
+
+    hxchipset@48{
+        status = "okay";
+        compatible = "himax,hxcommon";
+        reg = <0x48>;
+
+        himax,rst-gpio =  <&gpio3 RK_PB4 GPIO_ACTIVE_HIGH>;
+        himax,irq-gpio = <&gpio3 RK_PB1 IRQ_TYPE_LEVEL_HIGH>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&touch_int0>;
+
+        himax,panel-coords = <0 800 0 1280>;      //触摸范围
+        himax,display-coords = <0 800 0 1280>;    //分辨率
+        report_type = <1>;
+    };
+};
+
+&pinctrl {
+    touch {
+        touch_int0: touch-int0 {
+            rockchip,pins = <3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>;
+        };
+    };
+};

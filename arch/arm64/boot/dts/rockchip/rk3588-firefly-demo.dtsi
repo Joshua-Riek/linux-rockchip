@@ -1,0 +1,74 @@
+
+/ {
+    gpio_demo: gpio_demo {
+        compatible = "firefly,rk3588-gpio";
+        status = "disabled";
+        pinctrl-names = "default";
+        pinctrl-0 = <&pin56_57_gpio>;
+        firefly-gpio = <&gpio1 RK_PD0 GPIO_ACTIVE_HIGH>;             /*GPIO1_D0*/
+        firefly-irq-gpio = <&gpio1 RK_PD1 IRQ_TYPE_EDGE_RISING>;    /*GPIO1_D1*/
+    };
+
+    adc_demo: adc_demo {
+        compatible = "firefly,rk3588-adc";
+        status = "disabled";
+        io-channels = <&saradc 6>;
+    };
+
+    pwm_demo: pwm_demo {
+        compatible = "firefly,rk3588-pwm";
+        status = "disabled";
+        pwms = <&pwm15 0 100000000 1>;   //pwm1:PWM number   0 100000000:PWM period in nanoseconds  1:polarity
+        duty_ns = <50000000>;   //pwm duty cycle activation time, unit ns
+        pinctrl-names = "default";
+        pinctrl-0 = <&pwm15m2_pins>;
+    };
+
+    led_demo: led_demo {
+        compatible = "firefly,rk3588-led";
+        status = "disabled";
+    };
+};
+
+&i2c7 {
+    status = "disabled";
+    pinctrl-names = "default","i2c7_gpio";
+    pinctrl-1 = <&i2c7m0_gpio>;
+    gpios = <&gpio1 RK_PD0 GPIO_ACTIVE_HIGH>,<&gpio1 RK_PD1 GPIO_ACTIVE_LOW>;
+};
+
+&spi1{
+    spi_demo: spi_demo@0 {
+        compatible = "firefly,rk3588-spi";
+        status = "disabled";
+        reg = <0x0>;
+        spi-max-frequency = <50000000>;
+        //spi-cpha;   /* SPI mode: CPHA=1 */
+        //spi-cpol; 	/* SPI mode: CPOL=1 */
+        //spi-cs-high;
+    };
+};
+
+//&spidev1 {
+//    status = "disabled";
+//};
+
+&pinctrl {
+    gpio{
+        pin56_57_gpio: pin56_57_gpio{
+            rockchip,pins =
+            <1 RK_PD0 0 &pcfg_pull_none>,
+            <1 RK_PD1 0 &pcfg_pull_none>; 
+        };
+    };
+
+    i2c7{
+        i2c7m0_gpio: i2c7m0-gpio{
+        rockchip,pins =
+            /* i2c7_gpio1_d0 */
+            <1 RK_PD0 0 &pcfg_pull_none>,
+            /* i2c7_gpio1_d1 */
+            <1 RK_PD1 0 &pcfg_pull_none>; 
+        };
+    }; 
+};
