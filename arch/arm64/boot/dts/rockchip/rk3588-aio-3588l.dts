@@ -518,7 +518,7 @@
 	svid = <0xff01>;
     sbu1-dc-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
 	sbu2-dc-gpios = <&gpio4 RK_PB3 GPIO_ACTIVE_HIGH>;
-
+        status = "okay";
 	port {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -533,7 +533,6 @@
 		};
 	};
 
-    status = "okay";
 };
 
 &usbdrd_dwc3_0 {
@@ -700,9 +699,7 @@
 		interrupt-parent = <&gpio0>;
 		interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
 		wakeup-source;
-        interrupt-parent = <&gpio0>;
-	    interrupts = <RK_PB0 IRQ_TYPE_LEVEL_LOW>;
-	    status = "okay";
+		status = "okay";
 	};
 
 	usbc0: fusb302@22 {
