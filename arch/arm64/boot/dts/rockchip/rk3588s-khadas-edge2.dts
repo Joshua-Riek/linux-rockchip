@@ -511,7 +511,7 @@
 	khadas_mcu: system-controller@18 {
 		compatible = "khadas,mcu";
 		reg = <0x18>;
-		cooling-levels = <0 50 72 100>;
+		cooling-levels = <0 37 58 72 86 100>;
 		#cooling-cells = <2>;
 	};
 };
@@ -766,19 +766,31 @@
 		};
 		
 		trip1: trip-point@1 {
-			temperature = <55000>;
-			hysteresis = <5000>;
-			type = "active";
-		};
-		
-		trip2: trip-point@2 {
 			temperature = <60000>;
 			hysteresis = <5000>;
 			type = "active";
 		};
-		
+
+		trip2: trip-point@2 {
+			temperature = <62500>;
+			hysteresis = <5000>;
+			type = "active";
+		};
+
 		trip3: trip-point@3 {
+			temperature = <65000>;
+			hysteresis = <5000>;
+			type = "active";
+		};
+
+		trip4: trip-point@4 {
 			temperature = <70000>;
+			hysteresis = <5000>;
+			type = "active";
+		};
+
+		trip5: trip-point@5 {
+			temperature = <75000>;
 			hysteresis = <5000>;
 			type = "active";
 		};
@@ -802,10 +814,22 @@
 			cooling-device = <&khadas_mcu 2 3>;
 			contribution = <1024>;
 		};
-		
+
 		map3 {
 			trip = <&trip3>;
-			cooling-device = <&khadas_mcu 3 THERMAL_NO_LIMIT>;
+			cooling-device = <&khadas_mcu 3 4>;
+			contribution = <1024>;
+		};
+
+		map4 {
+			trip = <&trip4>;
+			cooling-device = <&khadas_mcu 4 5>;
+			contribution = <1024>;
+		};
+
+		map5 {
+			trip = <&trip5>;
+			cooling-device = <&khadas_mcu 5 THERMAL_NO_LIMIT>;
 			contribution = <1024>;
 		};
 	};
