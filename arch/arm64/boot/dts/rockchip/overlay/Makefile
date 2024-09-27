@@ -194,6 +194,7 @@ dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
 	rk3588-spi0-m1-cs0-spidev.dtbo \
 	rk3588-spi0-m1-cs1-spidev.dtbo \
 	rk3588-spi0-m2-cs0-cs1-spidev.dtbo \
+	rk3588-spi0-m2-cs0-mcp2515-8mhz.dtbo \
 	rk3588-spi0-m2-cs0-spidev.dtbo \
 	rk3588-spi0-m2-cs1-spidev.dtbo \
 	rk3588-spi1-m1-cs0-spidev.dtbo \
