@@ -14,7 +14,7 @@ do_linux_tools		= true
 do_tools_usbip		= true
 do_tools_cpupower	= true
 do_tools_perf		= true
-do_tools_bpftool	= true
+do_tools_bpftool	= false
 
 do_common_headers_indep	= false
 
