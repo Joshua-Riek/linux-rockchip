@@ -61,68 +61,6 @@
 			<0x0 0xfd90f000 0x0 0x1000>;
 	};
 
-	firmware {
-	optee: optee {
-		compatible = "linaro,optee-tz";
-		method = "smc";
-		status = "okay";
-		};
-	};
-
-	reserved_memory: reserved-memory {
-		#address-cells = <2>;
-		#size-cells = <2>;
-		ranges;
-
-		cmd: cma {
-			compatible = "shared-dma-pool";
-			reusable;
-			size = <0x00 0x2000000>;
-			linux,cma-default;
-		};
-
-		rknpu_reserved: rknpu {
-			compatible = "shared-dma-pool";
-			inactive;
-			reusable;
-			size = <0x0 0x20000000>;
-			alignment = <0x0 0x1000>;
-			status = "okay";
-		};
-
-		ramoops: ramoops@110000 {
-			compatible = "ramoops";
-			/* 0x110000 to 0x1f0000 is for ramoops */
-			reg = <0x0 0x110000 0x0 0xe0000>;
-			boot-log-size = <0x8000>;	/* do not change */
-			boot-log-count = <0x1>;		/* do not change */
-			console-size = <0x80000>;
-			pmsg-size = <0x30000>;
-			ftrace-size = <0x00000>;
-			record-size = <0x14000>;
-		};
-	};
-
-	rockchip_system_monitor: rockchip-system-monitor {
-		compatible = "rockchip,system-monitor";
-
-		rockchip,thermal-zone = "soc-thermal";
-	};
-
-	sram: sram@fdcc0000 {
-		compatible = "mmio-sram";
-		reg = <0x0 0xfdcc0000 0x0 0xb000>;
-
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges = <0x0 0x0 0xfdcc0000 0xb000>;
-
-		/* start address and size should be 4k algin */
-		rkvdec_sram: rkvdec-sram@0 {
-			reg = <0x0 0xb000>;
-		};
-	};
-
 	wireless_wlan: wireless-wlan {
 		compatible = "wlan-platdata";
 		rockchip,grf = <&grf>;
@@ -916,11 +854,6 @@
 	status = "okay";
 };
 
-&sram {
-	reg = <0x0 0xfdcc0000 0x0 0x10000>;
-	ranges = <0x0 0x0 0xfdcc0000 0x10000>;
-};
-
 &rk_rga {
 	status = "okay";
 	rga-supply = <&vdd_logic>;
@@ -932,13 +865,8 @@
 	status = "okay";
 };
 
-
 &rkvdec_mmu {
 	status = "okay";
-};
-
-&rkvdec_sram {
-	reg = <0x0 0x10000>;
 };
 
 &rockchip_suspend {
@@ -955,7 +883,6 @@
 };
 
 &rknpu {
-	memory-region = <&rknpu_reserved>;
 	rknpu-supply = <&vdd_npu>;
 	mem-supply = <&vdd_npu>;
 	npu-supply = <&vdd_npu>;
@@ -1041,6 +968,13 @@
 
 &usbhost30 {
 	status = "okay";
+};
+
+&vad {
+	rockchip,audio-src = <&i2s1_8ch>;
+	rockchip,buffer-time-ms = <128>;
+	rockchip,det-channel = <0>;
+	rockchip,mode = <0>;
 };
 
 &vdpu {
@@ -1253,32 +1187,6 @@
 	};
 };
 
-&reserved_memory {
-	ramoops: ramoops@110000 {
-		compatible = "ramoops";
-		reg = <0x0 0x110000 0x0 0xf0000>;
-		record-size = <0x20000>;
-		console-size = <0x80000>;
-		ftrace-size = <0x00000>;
-		pmsg-size = <0x50000>;
-	};
-
-	cma {
-		compatible = "shared-dma-pool";
-		reusable;
-		size = <0x0 0x00800000>;
-		linux,cma-default;
-	};
-
-	rknpu_reserved: rknpu {
-		compatible = "shared-dma-pool";
-		inactive;
-		reusable;
-		size = <0x0 0x20000000>;
-		alignment = <0x0 0x1000>;
-	};
-};
-
 &lpddr4_params {
 	/* freq info, freq_0 is final frequency, unit: MHz */
 	freq_0 = <1056>;
@@ -1302,6 +1210,10 @@
 };
 
 &pwm7 {
+    status = "okay";
+};
+
+&i2c2 {
     status = "okay";
 };
 
