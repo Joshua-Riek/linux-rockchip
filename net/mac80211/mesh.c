@@ -1558,6 +1558,19 @@ out:
 	sdata_unlock(sdata);
 }
 
+void mesh_update_mfp_flag(struct ieee80211_sub_if_data *sdata, struct sta_info *sta)
+{
+	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
+	if (test_sta_flag(sta, WLAN_STA_MFP))
+	{
+		mpl_dbg(sdata,"%s: Mesh MFP Enabled\n",__func__);
+		ifmsh->mfp = IEEE80211_MESH_MFP_ENABLED;
+	} else {
+		mpl_dbg(sdata,"%s: Mesh MFP Disabled\n",__func__);
+		ifmsh->mfp = IEEE80211_MESH_MFP_DISABLED;
+	}
+}
+
 static void mesh_bss_info_changed(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;

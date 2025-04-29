@@ -1,0 +1,20 @@
+@@ -991,7 +991,8 @@
+ 				gpiod_set_value_cansleep(spi->cs_gpiod, !enable);
+ 			else
+ 				/* Polarity handled by GPIO library */
+-				gpiod_set_value_cansleep(spi->cs_gpiod, activate);
++				gpiod_set_value_cansleep(spi->cs_gpiod,
++					(spi->controller->flags & SPI_CONTROLLER_ENABLE_CS_GPIOD) ? enable : activate);
+ 		}
+ 		/* Some SPI masters need both GPIO CS & slave_select */
+ 		if ((spi->controller->flags & SPI_MASTER_GPIO_SS) &&
+@@ -3637,7 +3638,8 @@
+ 		return -EINVAL;
+ 
+ 	if (ctlr->use_gpio_descriptors && ctlr->cs_gpiods &&
+-	    ctlr->cs_gpiods[spi->chip_select] && !(spi->mode & SPI_CS_HIGH)) {
++	    ctlr->cs_gpiods[spi->chip_select] && !(spi->mode & SPI_CS_HIGH) &&
++	    !(ctlr->flags & SPI_CONTROLLER_ENABLE_CS_GPIOD)) {
+ 		dev_dbg(&spi->dev,
+ 			"setup: forcing CS_HIGH (use_gpio_descriptors)\n");
+ 		spi->mode |= SPI_CS_HIGH;

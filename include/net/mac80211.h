@@ -142,6 +142,14 @@
  * to the frame TX timestamp and report the ack RX timestamp in the
  * ieee80211_tx_status struct.
  */
+
+/** Morse Micro patches which add functionality that the driver needs to know about, can be
+ * signalled by adding a define here.
+ */
+
+/** mac80211 has the capability to negotiate NDP block acknowledgements */
+#define MORSE_MAC80211_S1G_FEATURE_NDP_BLOCKACK
+
 struct device;
 
 /**
@@ -1354,7 +1362,7 @@ ieee80211_tx_info_clear_status(struct ieee80211_tx_info *info)
  * @RX_FLAG_AMPDU_EOF_BIT_KNOWN: The EOF value is known
  * @RX_FLAG_RADIOTAP_HE: HE radiotap data is present
  *	(&struct ieee80211_radiotap_he, mac80211 will fill in
- *	
+ *
  *	 - DATA3_DATA_MCS
  *	 - DATA3_DATA_DCM
  *	 - DATA3_CODING
@@ -1362,7 +1370,7 @@ ieee80211_tx_info_clear_status(struct ieee80211_tx_info *info)
  *	 - DATA5_DATA_BW_RU_ALLOC
  *	 - DATA6_NSTS
  *	 - DATA3_STBC
- *	
+ *
  *	from the RX info data, so leave those zeroed when building this data)
  * @RX_FLAG_RADIOTAP_HE_MU: HE MU radiotap data is present
  *	(&struct ieee80211_radiotap_he_mu)
@@ -2597,6 +2605,9 @@ struct ieee80211_txq {
  * @IEEE80211_HW_MLO_MCAST_MULTI_LINK_TX: Hardware/driver handles transmitting
  *	multicast frames on all links, mac80211 should not do that.
  *
+ * @IEEE80211_HW_SUPPORTS_NDP_BLOCKACK: Hardware supports 11ah A-MPDU aggregation with NDP block
+ *	ACKs
+ *
  * @NUM_IEEE80211_HW_FLAGS: number of hardware flags, used for sizing arrays
  */
 enum ieee80211_hw_flags {
@@ -2654,6 +2665,7 @@ enum ieee80211_hw_flags {
 	IEEE80211_HW_SUPPORTS_CONC_MON_RX_DECAP,
 	IEEE80211_HW_DETECTS_COLOR_COLLISION,
 	IEEE80211_HW_MLO_MCAST_MULTI_LINK_TX,
+	IEEE80211_HW_SUPPORTS_NDP_BLOCKACK,
 
 	/* keep last, obviously */
 	NUM_IEEE80211_HW_FLAGS
@@ -3465,6 +3477,7 @@ enum ieee80211_ampdu_mlme_action {
  *	%IEEE80211_AMPDU_TX_OPERATIONAL
  * @amsdu: indicates the peer's ability to receive A-MSDU within A-MPDU.
  *	valid when the action is set to %IEEE80211_AMPDU_TX_OPERATIONAL
+ * @ndp: indicates the driver has requested the session to use NDP block ACKs
  * @timeout: BA session timeout. Valid only when the action is set to
  *	%IEEE80211_AMPDU_RX_START
  */
@@ -3475,6 +3488,7 @@ struct ieee80211_ampdu_params {
 	u16 ssn;
 	u16 buf_size;
 	bool amsdu;
+	bool ndp;
 	u16 timeout;
 };
 

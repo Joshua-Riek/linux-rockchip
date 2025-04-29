@@ -190,6 +190,8 @@ static int mesh_path_sel_frame_tx(enum mpath_frame_type action, u8 flags,
 		pos += 4;
 	}
 
+	if (sdata->u.mesh.mfp == IEEE80211_MESH_MFP_DISABLED)
+		IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_DONT_ENCRYPT;
 	ieee80211_tx_skb(sdata, skb);
 	return 0;
 }

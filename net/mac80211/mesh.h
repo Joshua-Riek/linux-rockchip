@@ -339,12 +339,15 @@ static inline bool mesh_path_sel_is_hwmp(struct ieee80211_sub_if_data *sdata)
 void mesh_path_flush_by_iface(struct ieee80211_sub_if_data *sdata);
 void mesh_sync_adjust_tsf(struct ieee80211_sub_if_data *sdata);
 void ieee80211s_stop(void);
+void mesh_update_mfp_flag(struct ieee80211_sub_if_data *sdata, struct sta_info *sta);
 #else
 static inline bool mesh_path_sel_is_hwmp(struct ieee80211_sub_if_data *sdata)
 { return false; }
 static inline void mesh_path_flush_by_iface(struct ieee80211_sub_if_data *sdata)
 {}
 static inline void ieee80211s_stop(void) {}
+static inline void mesh_update_mfp_flag(struct ieee80211_sub_if_data *sdata, struct sta_info *sta)
+{}
 #endif
 
 #endif /* IEEE80211S_H */

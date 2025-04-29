@@ -105,6 +105,7 @@ source "drivers/base/firmware_loader/Kconfig"
 
 config WANT_DEV_COREDUMP
 	bool
+	default y
 	help
 	  Drivers should "select" this option if they desire to use the
 	  device coredump mechanism.

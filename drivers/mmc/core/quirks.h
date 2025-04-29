@@ -185,6 +185,10 @@ static const struct mmc_fixup __maybe_unused sdio_card_init_methods[] = {
 			      MMC_QUIRK_BROKEN_BYTE_MODE_512 |
 			      MMC_QUIRK_LENIENT_FN0 |
 			      MMC_QUIRK_BLKSZ_FOR_BYTE_MODE),
+	
+	SDIO_FIXUP_COMPATIBLE("morse,mm6104", add_quirk, MMC_QUIRK_NO_18V),
+
+	SDIO_FIXUP_COMPATIBLE("morse,mm610x", add_quirk, MMC_QUIRK_NO_18V),
 
 	END_FIXUP
 };

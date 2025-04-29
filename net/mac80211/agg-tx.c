@@ -59,7 +59,7 @@
  */
 
 static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
-					 const u8 *da, u16 tid,
+					 const u8 *da, u16 tid, bool ndp,
 					 u8 dialog_token, u16 start_seq_num,
 					 u16 agg_size, u16 timeout)
 {
@@ -92,7 +92,8 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
 	skb_put(skb, 1 + sizeof(mgmt->u.action.u.addba_req));
 
 	mgmt->u.action.category = WLAN_CATEGORY_BACK;
-	mgmt->u.action.u.addba_req.action_code = WLAN_ACTION_ADDBA_REQ;
+	mgmt->u.action.u.addba_req.action_code = ndp ? WLAN_ACTION_NDP_ADDBA_REQ :
+			WLAN_ACTION_ADDBA_REQ;
 
 	mgmt->u.action.u.addba_req.dialog_token = dialog_token;
 	capab = IEEE80211_ADDBA_PARAM_AMSDU_MASK;
@@ -340,6 +341,8 @@ int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 		return -ENOENT;
 	}
 
+	params.ndp = tid_tx->ndp;
+
 	/*
 	 * if we're already stopping ignore any new requests to stop
 	 * unless we're destroying it in which case notify the driver
@@ -480,7 +483,7 @@ static void ieee80211_send_addba_with_timeout(struct sta_info *sta,
 	}
 
 	/* send AddBA request */
-	ieee80211_send_addba_request(sdata, sta->sta.addr, tid,
+	ieee80211_send_addba_request(sdata, sta->sta.addr, tid, tid_tx->ndp,
 				     tid_tx->dialog_token, tid_tx->ssn,
 				     buf_size, tid_tx->timeout);
 
@@ -498,9 +501,17 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
 		.tid = tid,
 		.buf_size = 0,
 		.amsdu = false,
+		.ndp = false,
 		.timeout = 0,
 	};
 	int ret;
+
+	/* If the HW supports NDP blockacks, try to negotiate. It's the drivers responsibility to
+	 * clear .ndp if the conditions for NDP block acks are not met for this TID.
+	 * TODO: remove driver responsibility when S1G STA caps exist in mac80211
+	 */
+	if (ieee80211_hw_check(&local->hw, SUPPORTS_NDP_BLOCKACK))
+		params.ndp = true;
 
 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
 
@@ -523,6 +534,10 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
 	params.ssn = sta->tid_seq[tid] >> 4;
 	ret = drv_ampdu_action(local, sdata, &params);
 	tid_tx->ssn = params.ssn;
+
+	/* driver may clear this flag if it does not want NDP for this session */
+	tid_tx->ndp = params.ndp;
+
 	if (ret == IEEE80211_AMPDU_TX_START_DELAY_ADDBA) {
 		return;
 	} else if (ret == IEEE80211_AMPDU_TX_START_IMMEDIATE) {
@@ -746,6 +761,7 @@ static void ieee80211_agg_tx_operational(struct ieee80211_local *local,
 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
 	params.buf_size = tid_tx->buf_size;
 	params.amsdu = tid_tx->amsdu;
+	params.ndp = tid_tx->ndp;
 
 	ht_dbg(sta->sdata, "Aggregation is on for %pM tid %d\n",
 	       sta->sta.addr, tid);
@@ -927,7 +943,7 @@ void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
 		ieee80211_agg_start_txq(sta, tid, false);
 
 	if (send_delba)
-		ieee80211_send_delba(sdata, sta->sta.addr, tid,
+		ieee80211_send_delba(sdata, sta->sta.addr, tid, tid_tx->ndp,
 			WLAN_BACK_INITIATOR, WLAN_REASON_QSTA_NOT_USE);
 }
 
@@ -983,6 +999,13 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
 	if (mgmt->u.action.u.addba_resp.dialog_token != tid_tx->dialog_token) {
 		ht_dbg(sta->sdata, "wrong addBA response token, %pM tid %d\n",
 		       sta->sta.addr, tid);
+		goto out;
+	}
+
+	if ((tid_tx->ndp && mgmt->u.action.u.addba_resp.action_code != WLAN_ACTION_NDP_ADDBA_RESP) ||
+			(!tid_tx->ndp && mgmt->u.action.u.addba_resp.action_code != WLAN_ACTION_ADDBA_RESP)) {
+		ht_dbg(sta->sdata, "wrong addBA response action code, %d ndp %d\n",
+				mgmt->u.action.u.addba_resp.action_code, tid_tx->ndp);
 		goto out;
 	}
 

@@ -67,6 +67,14 @@ MODULE_PARM_DESC(beacon_loss_count,
 		 "Number of beacon intervals before we decide beacon was lost.");
 
 /*
+ * Number of beacon intervals to wait for a beacon at association.
+ */
+static int beacon_wait_count = 1;
+module_param(beacon_wait_count, int, 0644);
+MODULE_PARM_DESC(beacon_wait_count,
+		 "Number of beacon intervals to wait for a beacon at association.");
+
+/*
  * Time the connection can be idle before we probe
  * it to see if we can still talk to the AP.
  */
@@ -1929,11 +1937,11 @@ ieee80211_sta_process_chanswitch(struct ieee80211_link_data *link,
 	}
 
 	/* channel switch handled in software */
-	if (csa_ie.count <= 1)
+	if (csa_ie.count <= 1) /* consider short beacons time also */
 		ieee80211_queue_work(&local->hw, &link->u.mgd.chswitch_work);
 	else
 		mod_timer(&link->u.mgd.chswitch_timer,
-			  TU_TO_EXP_TIME((csa_ie.count - 1) *
+			  TU_TO_EXP_TIME((csa_ie.count - 1) * sdata->vif.bss_conf.dtim_period *
 					 cbss->beacon_interval));
 	return;
  lock_and_drop_connection:
@@ -7225,11 +7233,12 @@ int ieee80211_mgd_assoc(struct ieee80211_sub_if_data *sdata,
 		if (beacon_ies) {
 			/*
 			 * Wait up to one beacon interval ...
-			 * should this be more if we miss one?
+			 * Beacon periods to wait can be set via modparam
 			 */
 			sdata_info(sdata, "waiting for beacon from %pM\n",
 				   link->u.mgd.bssid);
-			assoc_data->timeout = TU_TO_EXP_TIME(req->bss->beacon_interval);
+			assoc_data->timeout = TU_TO_EXP_TIME(beacon_wait_count *
+				req->bss->beacon_interval);
 			assoc_data->timeout_started = true;
 			assoc_data->need_beacon = true;
 		}

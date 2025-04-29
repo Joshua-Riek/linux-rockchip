@@ -1977,6 +1977,10 @@ static int ieee80211_add_station(struct wiphy *wiphy, struct net_device *dev,
 		return err;
 	}
 
+	if (ieee80211_vif_is_mesh(&sdata->vif)) {
+		mesh_update_mfp_flag(sdata,sta);
+	}
+
 	/*
 	 * for TDLS and for unassociated station, rate control should be
 	 * initialized only when rates are known and station is marked

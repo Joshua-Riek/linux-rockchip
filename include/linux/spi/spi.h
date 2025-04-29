@@ -553,6 +553,13 @@ struct spi_controller {
 #define SPI_MASTER_GPIO_SS		BIT(5)	/* GPIO CS must select slave */
 #define SPI_CONTROLLER_SUSPENDED	BIT(6)	/* Currently suspended */
 
+	/*
+	 * When this flag is set:
+	 * 1. Do not set SPI_CS_HIGH by default during setup.
+	 * 2. Invert GPIO polarity in the spi_set_cs function when SPI mode is set to SPI_CS_HIGH.
+	 */
+#define SPI_CONTROLLER_ENABLE_CS_GPIOD BIT(9)
+
 	/* Flag indicating if the allocation of this struct is devres-managed */
 	bool			devm_allocated;
 

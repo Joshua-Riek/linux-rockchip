@@ -1384,7 +1384,7 @@ static void ieee80211_rx_reorder_ampdu(struct ieee80211_rx_data *rx,
 		if (ack_policy == IEEE80211_QOS_CTL_ACK_POLICY_BLOCKACK &&
 		    !test_bit(tid, rx->sta->ampdu_mlme.agg_session_valid) &&
 		    !test_and_set_bit(tid, rx->sta->ampdu_mlme.unexpected_agg))
-			ieee80211_send_delba(rx->sdata, rx->sta->sta.addr, tid,
+			ieee80211_send_delba(rx->sdata, rx->sta->sta.addr, tid, false,
 					     WLAN_BACK_RECIPIENT,
 					     WLAN_REASON_QSTA_REQUIRE_SETUP);
 		goto dont_reorder;
@@ -3095,6 +3095,7 @@ ieee80211_rx_h_ctrl(struct ieee80211_rx_data *rx, struct sk_buff_head *frames)
 {
 	struct sk_buff *skb = rx->skb;
 	struct ieee80211_bar *bar = (struct ieee80211_bar *)skb->data;
+	struct ieee80211_mgmt *back = (struct ieee80211_mgmt *)skb->data;
 	struct tid_ampdu_rx *tid_agg_rx;
 	u16 start_seq_num;
 	u16 tid;
@@ -3121,7 +3122,7 @@ ieee80211_rx_h_ctrl(struct ieee80211_rx_data *rx, struct sk_buff_head *frames)
 
 		if (!test_bit(tid, rx->sta->ampdu_mlme.agg_session_valid) &&
 		    !test_and_set_bit(tid, rx->sta->ampdu_mlme.unexpected_agg))
-			ieee80211_send_delba(rx->sdata, rx->sta->sta.addr, tid,
+			ieee80211_send_delba(rx->sdata, rx->sta->sta.addr, tid, false,
 					     WLAN_BACK_RECIPIENT,
 					     WLAN_REASON_QSTA_REQUIRE_SETUP);
 
@@ -3526,16 +3527,19 @@ ieee80211_rx_h_action(struct ieee80211_rx_data *rx)
 
 		switch (mgmt->u.action.u.addba_req.action_code) {
 		case WLAN_ACTION_ADDBA_REQ:
+		case WLAN_ACTION_NDP_ADDBA_REQ:
 			if (len < (IEEE80211_MIN_ACTION_SIZE +
 				   sizeof(mgmt->u.action.u.addba_req)))
 				goto invalid;
 			break;
 		case WLAN_ACTION_ADDBA_RESP:
+		case WLAN_ACTION_NDP_ADDBA_RESP:
 			if (len < (IEEE80211_MIN_ACTION_SIZE +
 				   sizeof(mgmt->u.action.u.addba_resp)))
 				goto invalid;
 			break;
 		case WLAN_ACTION_DELBA:
+		case WLAN_ACTION_NDP_DELBA:
 			if (len < (IEEE80211_MIN_ACTION_SIZE +
 				   sizeof(mgmt->u.action.u.delba)))
 				goto invalid;
@@ -4270,7 +4274,8 @@ static bool ieee80211_accept_frame(struct ieee80211_rx_data *rx)
 	case NL80211_IFTYPE_STATION:
 		if (!bssid && !sdata->u.mgd.use_4addr)
 			return false;
-		if (ieee80211_is_robust_mgmt_frame(skb) && !rx->sta)
+		if (ieee80211_is_first_frag(hdr->seq_ctrl) &&
+		    ieee80211_is_robust_mgmt_frame(skb) && !rx->sta)
 			return false;
 		if (multicast)
 			return true;
